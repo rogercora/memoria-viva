@@ -464,14 +464,14 @@ export default function PatientPage() {
             </button>
             <button
               onClick={() => setActiveTab('memorias')}
-              className="bg-[#2A9D8F] text-white rounded-2xl border-[3px] border-[#264653] shadow-[4px_4px_0px_#264653] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-10 flex flex-col items-center justify-center gap-6"
+              className="bg-[#023E8A] text-white rounded-2xl border-[3px] border-[#264653] shadow-[4px_4px_0px_#264653] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-10 flex flex-col items-center justify-center gap-6"
             >
               <Image size={80} strokeWidth={2.5} />
               <span className="text-4xl font-bold">Minhas Memórias</span>
             </button>
             <button
               onClick={() => setActiveTab('jogos')}
-              className="bg-[#E63946] text-white rounded-2xl border-[3px] border-[#264653] shadow-[4px_4px_0px_#264653] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-10 flex flex-col items-center justify-center gap-6"
+              className="bg-[#7209B7] text-white rounded-2xl border-[3px] border-[#264653] shadow-[4px_4px_0px_#264653] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-10 flex flex-col items-center justify-center gap-6"
             >
               <Gamepad2 size={80} strokeWidth={2.5} />
               <span className="text-4xl font-bold">Jogos</span>
@@ -493,7 +493,7 @@ export default function PatientPage() {
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {messages.length === 0 ? (
                 <div className="text-center py-12">
-                  <Brain className="w-16 h-16 mx-auto text-blue-300 mb-4" />
+                  <Brain className="w-16 h-16 mx-auto opacity-50 text-[#963C67] mb-4" />
                   <p className="text-xl text-gray-600">
                     Olá! Sou seu amigo virtual. Vamos conversar?
                   </p>

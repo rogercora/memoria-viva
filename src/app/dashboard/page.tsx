@@ -30,7 +30,7 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <Brain className="w-16 h-16 mx-auto text-blue-600 animate-pulse" />
+          <Brain className="w-16 h-16 mx-auto text-[#963C67] animate-pulse" />
           <p className="mt-4 text-xl text-gray-700">Carregando...</p>
         </div>
       </div>
@@ -69,7 +69,7 @@ export default function DashboardPage() {
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Brain className="w-8 h-8 text-blue-600" />
+              <Brain className="w-8 h-8 text-[#963C67]" />
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Memória Viva</h1>
                 <p className="text-sm text-gray-600">Olá, {user.full_name}</p>

@@ -20,7 +20,7 @@ export default function HomePage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-green-50">
         <div className="text-center">
-          <Brain className="w-16 h-16 mx-auto text-blue-600 animate-pulse" />
+          <Brain className="w-16 h-16 mx-auto text-[#963C67] animate-pulse" />
           <p className="mt-4 text-xl text-gray-700">Carregando...</p>
         </div>
       </div>
@@ -33,7 +33,7 @@ export default function HomePage() {
       <header className="p-6">
         <nav className="max-w-6xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <Brain className="w-10 h-10 text-blue-600" />
+            <Brain className="w-10 h-10 text-[#963C67]" />
             <h1 className="text-3xl font-bold text-gray-900">Memória Viva</h1>
           </div>
           <div className="flex gap-4">

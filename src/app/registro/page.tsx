@@ -65,7 +65,7 @@ export default function RegistroPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <Brain className="w-12 h-12 text-blue-600" />
+            <Brain className="w-12 h-12 text-[#963C67]" />
             <h1 className="text-3xl font-bold text-gray-900">Memória Viva</h1>
           </div>
           <p className="text-gray-700 text-lg">
