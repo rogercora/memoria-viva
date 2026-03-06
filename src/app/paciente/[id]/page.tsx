@@ -166,8 +166,12 @@ export default function PatientPage() {
   }, [patientId, router]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    if (activeTab === 'chat') {
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }, [messages, activeTab]);
 
   // Salvar mensagens no LocalStorage sempre que mudarem
   useEffect(() => {

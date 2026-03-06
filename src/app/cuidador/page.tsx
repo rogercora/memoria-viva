@@ -33,6 +33,7 @@ export default function CuidadorPage() {
   const [sending, setSending] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [recognition, setRecognition] = useState<any>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Diário
   const [moodCaregiver, setMoodCaregiver] = useState<MoodType>('neutro');
@@ -184,6 +185,14 @@ export default function CuidadorPage() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (activeTab === 'chat') {
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }, [messages, activeTab]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
@@ -348,14 +357,15 @@ export default function CuidadorPage() {
                     >
                       <div
                         className={`max-w-[80%] rounded-2xl px-4 py-3 ${message.role === 'user'
-                            ? 'bg-green-600 text-white'
-                            : 'bg-gray-200 text-gray-900'
+                          ? 'bg-green-600 text-white'
+                          : 'bg-gray-200 text-gray-900'
                           }`}
                       >
                         <p className="text-lg">{message.content}</p>
                       </div>
                     </div>
                   ))}
+                  <div ref={messagesEndRef} />
                 </>
               )}
             </div>
@@ -414,8 +424,8 @@ export default function CuidadorPage() {
                         key={mood}
                         onClick={() => setMoodCaregiver(mood)}
                         className={`py-3 px-4 rounded-lg border-2 font-medium transition-all ${moodCaregiver === mood
-                            ? 'border-green-600 bg-green-50 text-green-700'
-                            : 'border-gray-300 hover:border-gray-400'
+                          ? 'border-green-600 bg-green-50 text-green-700'
+                          : 'border-gray-300 hover:border-gray-400'
                           }`}
                       >
                         {MOOD_LABELS[mood]}
@@ -479,12 +489,12 @@ export default function CuidadorPage() {
               <div className="relative w-64 h-64 mx-auto mb-8">
                 <div
                   className={`absolute inset-0 rounded-full transition-all duration-[4000ms] ${breathingPhase === 'inhale'
-                      ? 'bg-green-400 scale-100'
-                      : breathingPhase === 'hold'
-                        ? 'bg-blue-400 scale-100'
-                        : breathingPhase === 'exhale'
-                          ? 'bg-purple-400 scale-50'
-                          : 'bg-gray-200 scale-75'
+                    ? 'bg-green-400 scale-100'
+                    : breathingPhase === 'hold'
+                      ? 'bg-blue-400 scale-100'
+                      : breathingPhase === 'exhale'
+                        ? 'bg-purple-400 scale-50'
+                        : 'bg-gray-200 scale-75'
                     }`}
                 />
                 <div className="absolute inset-0 flex items-center justify-center">
