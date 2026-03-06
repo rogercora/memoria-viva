@@ -30,10 +30,10 @@ export function Button({
   };
 
   const sizeStyles = {
-    small: 'px-4 py-3 text-base gap-2',
-    medium: 'px-6 py-4 text-lg gap-3',
-    large: 'px-8 py-5 text-xl gap-4',
-    xlarge: 'px-10 py-6 text-2xl gap-4',
+    small: 'px-3 py-2 md:px-4 md:py-3 text-sm md:text-base gap-2',
+    medium: 'px-4 py-3 md:px-6 md:py-4 text-base md:text-lg gap-2 md:gap-3',
+    large: 'px-5 py-3 md:px-8 md:py-5 text-lg md:text-xl gap-3 md:gap-4',
+    xlarge: 'px-6 py-4 md:px-10 md:py-6 text-xl md:text-2xl gap-3 md:gap-4',
   };
 
   const disabledStyles = disabled

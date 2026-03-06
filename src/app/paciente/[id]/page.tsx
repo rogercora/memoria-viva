@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useMockAuth } from '@/hooks/useMockAuth';
 import { createClient } from '@supabase/supabase-js';
-import { Brain, MessageCircle, Image, Gamepad2, Bell, ArrowLeft, Mic, MicOff } from 'lucide-react';
+import { Brain, MessageCircle, Image, Gamepad2, Bell, ArrowLeft, Mic, MicOff, Send } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Patient } from '@/types';
@@ -401,37 +401,38 @@ export default function PatientPage() {
   if (!patient) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-green-50 to-yellow-50">
+    <div className="min-h-screen bg-transparent">
       {/* Header */}
       <header className="bg-white shadow-sm border-b sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 py-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-row items-center justify-between gap-2 md:gap-6">
+            <div className="flex flex-row items-center gap-2 md:gap-4">
               <Button
                 onClick={() => activeTab === 'menu' ? router.push('/dashboard') : setActiveTab('menu')}
                 variant="secondary"
                 size="large"
                 icon={<ArrowLeft size={24} strokeWidth={3} />}
+                className="!px-3 md:!px-8"
               >
-                Voltar
+                <span className="hidden md:inline">Voltar</span>
               </Button>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 md:gap-4">
                 {patient.photo_url ? (
                   <img
                     src={patient.photo_url}
                     alt={patient.name}
-                    className="w-16 h-16 rounded-full object-cover border-[3px] border-[#264653]"
+                    className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-[3px] border-[#264653]"
                   />
                 ) : (
-                  <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center border-[3px] border-[#264653]">
-                    <span className="text-2xl font-bold text-blue-600">
+                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-blue-100 flex items-center justify-center border-[3px] border-[#264653]">
+                    <span className="text-xl md:text-2xl font-bold text-blue-600">
                       {patient.name.charAt(0)}
                     </span>
                   </div>
                 )}
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900">{patient.name}</h1>
-                  <p className="text-lg text-gray-700 font-medium">
+                  <h1 className="text-xl md:text-3xl font-bold text-gray-900 leading-tight line-clamp-1">{patient.name}</h1>
+                  <p className="text-sm md:text-lg text-gray-700 font-medium">
                     {patient.stage === 'leve' && 'Estágio Leve'}
                     {patient.stage === 'moderado' && 'Estágio Moderado'}
                     {patient.stage === 'grave' && 'Estágio Grave'}
@@ -445,7 +446,7 @@ export default function PatientPage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-4 py-8">
+      <main className="max-w-5xl mx-auto px-2 md:px-4 py-4 md:py-8">
 
         {/* Menu Principal */}
         {activeTab === 'menu' && (
@@ -483,7 +484,7 @@ export default function PatientPage() {
 
         {/* Chat */}
         {activeTab === 'chat' && (
-          <Card className="h-[calc(100vh-280px)] flex flex-col" padding="none">
+          <Card className="h-[calc(100dvh-140px)] md:h-[calc(100vh-220px)] flex flex-col overflow-hidden" padding="none">
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {messages.length === 0 ? (
@@ -528,15 +529,15 @@ export default function PatientPage() {
             </div>
 
             {/* Input */}
-            <div className="border-t p-4">
-              <div className="flex gap-2">
+            <div className="border-t-2 border-[#264653] p-2 md:p-4 bg-gray-50">
+              <div className="flex flex-row gap-2 md:gap-3">
                 <input
                   type="text"
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                  placeholder="Digite ou use o microfone..."
-                  className="flex-1 px-4 py-3 text-lg rounded-xl border-2 border-gray-300 focus:outline-none focus:ring-4 focus:ring-blue-500"
+                  placeholder="Mensagem..."
+                  className="flex-1 w-full px-3 py-3 md:px-4 md:py-3 text-base md:text-lg rounded-xl border-2 border-[#264653] focus:outline-none focus:ring-4 focus:ring-[#2D6A4F] bg-white shadow-sm"
                   disabled={sending}
                 />
                 <Button
@@ -544,17 +545,20 @@ export default function PatientPage() {
                   variant="secondary"
                   size="large"
                   disabled={isListening || !recognition}
-                  icon={isListening ? <MicOff size={20} /> : <Mic size={20} />}
+                  icon={isListening ? <MicOff size={24} /> : <Mic size={24} />}
+                  className="!px-3 md:!px-6"
                 >
-                  {isListening ? 'Ouvindo...' : 'Voz'}
+                  <span className="hidden sm:inline">{isListening ? 'Ouvindo...' : 'Voz'}</span>
                 </Button>
                 <Button
                   onClick={handleSendMessage}
                   variant="primary"
                   size="large"
                   disabled={sending || !inputMessage.trim()}
+                  icon={<Send size={24} />}
+                  className="!px-3 md:!px-6"
                 >
-                  {sending ? 'Enviando...' : 'Enviar'}
+                  <span className="hidden sm:inline">{sending ? 'Enviando...' : 'Enviar'}</span>
                 </Button>
               </div>
             </div>
