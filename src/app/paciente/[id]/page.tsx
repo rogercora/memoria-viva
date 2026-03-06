@@ -29,7 +29,7 @@ export default function PatientPage() {
   const patientId = params.id as string;
 
   const [patient, setPatient] = useState<Patient | null>(null);
-  const [activeTab, setActiveTab] = useState<'chat' | 'memorias' | 'jogos' | 'rotina'>('chat');
+  const [activeTab, setActiveTab] = useState<'menu' | 'chat' | 'memorias' | 'jogos' | 'rotina'>('menu');
   // Carregar mensagens do LocalStorage ao iniciar
   const [messages, setMessages] = useState<Message[]>(() => {
     if (typeof window !== 'undefined') {
@@ -405,33 +405,33 @@ export default function PatientPage() {
       {/* Header */}
       <header className="bg-white shadow-sm border-b sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
               <Button
-                onClick={() => router.push('/dashboard')}
+                onClick={() => activeTab === 'menu' ? router.push('/dashboard') : setActiveTab('menu')}
                 variant="secondary"
-                size="small"
-                icon={<ArrowLeft size={20} />}
+                size="large"
+                icon={<ArrowLeft size={24} strokeWidth={3} />}
               >
                 Voltar
               </Button>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 {patient.photo_url ? (
                   <img
                     src={patient.photo_url}
                     alt={patient.name}
-                    className="w-12 h-12 rounded-full object-cover"
+                    className="w-16 h-16 rounded-full object-cover border-[3px] border-[#264653]"
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                    <span className="text-xl font-bold text-blue-600">
+                  <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center border-[3px] border-[#264653]">
+                    <span className="text-2xl font-bold text-blue-600">
                       {patient.name.charAt(0)}
                     </span>
                   </div>
                 )}
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">{patient.name}</h1>
-                  <p className="text-sm text-gray-600">
+                  <h1 className="text-3xl font-bold text-gray-900">{patient.name}</h1>
+                  <p className="text-lg text-gray-700 font-medium">
                     {patient.stage === 'leve' && 'Estágio Leve'}
                     {patient.stage === 'moderado' && 'Estágio Moderado'}
                     {patient.stage === 'grave' && 'Estágio Grave'}
@@ -440,53 +440,47 @@ export default function PatientPage() {
                 </div>
               </div>
             </div>
-            <Brain className="w-10 h-10 text-blue-600" />
           </div>
-
-          {/* Tabs de Navegação */}
-          <nav className="flex gap-2 mt-4 overflow-x-auto">
-            <Button
-              onClick={() => setActiveTab('chat')}
-              variant={activeTab === 'chat' ? 'primary' : 'secondary'}
-              size="large"
-              icon={<MessageCircle size={20} />}
-              className="flex-1 min-w-fit"
-            >
-              Conversar
-            </Button>
-            <Button
-              onClick={() => setActiveTab('memorias')}
-              variant={activeTab === 'memorias' ? 'primary' : 'secondary'}
-              size="large"
-              icon={<Image size={20} />}
-              className="flex-1 min-w-fit"
-            >
-              Memórias
-            </Button>
-            <Button
-              onClick={() => setActiveTab('jogos')}
-              variant={activeTab === 'jogos' ? 'primary' : 'secondary'}
-              size="large"
-              icon={<Gamepad2 size={20} />}
-              className="flex-1 min-w-fit"
-            >
-              Jogos
-            </Button>
-            <Button
-              onClick={() => setActiveTab('rotina')}
-              variant={activeTab === 'rotina' ? 'primary' : 'secondary'}
-              size="large"
-              icon={<Bell size={20} />}
-              className="flex-1 min-w-fit"
-            >
-              Rotina
-            </Button>
-          </nav>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-4 py-6">
+      <main className="max-w-5xl mx-auto px-4 py-8">
+
+        {/* Menu Principal */}
+        {activeTab === 'menu' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <button
+              onClick={() => setActiveTab('chat')}
+              className="bg-[#2D6A4F] text-white rounded-2xl border-[3px] border-[#264653] shadow-[4px_4px_0px_#264653] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-10 flex flex-col items-center justify-center gap-6"
+            >
+              <MessageCircle size={80} strokeWidth={2.5} />
+              <span className="text-4xl font-bold">Falar com IA</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('memorias')}
+              className="bg-[#2A9D8F] text-white rounded-2xl border-[3px] border-[#264653] shadow-[4px_4px_0px_#264653] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-10 flex flex-col items-center justify-center gap-6"
+            >
+              <Image size={80} strokeWidth={2.5} />
+              <span className="text-4xl font-bold">Minhas Memórias</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('jogos')}
+              className="bg-[#E63946] text-white rounded-2xl border-[3px] border-[#264653] shadow-[4px_4px_0px_#264653] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-10 flex flex-col items-center justify-center gap-6"
+            >
+              <Gamepad2 size={80} strokeWidth={2.5} />
+              <span className="text-4xl font-bold">Jogos</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('rotina')}
+              className="bg-[#F4A261] text-[#264653] rounded-2xl border-[3px] border-[#264653] shadow-[4px_4px_0px_#264653] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-10 flex flex-col items-center justify-center gap-6"
+            >
+              <Bell size={80} strokeWidth={2.5} />
+              <span className="text-4xl font-bold">Minha Rotina</span>
+            </button>
+          </div>
+        )}
+
         {/* Chat */}
         {activeTab === 'chat' && (
           <Card className="h-[calc(100vh-280px)] flex flex-col" padding="none">
@@ -511,8 +505,8 @@ export default function PatientPage() {
                     >
                       <div
                         className={`max-w-[80%] rounded-2xl px-4 py-3 ${message.role === 'user'
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-gray-200 text-gray-900'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-200 text-gray-900'
                           }`}
                       >
                         <p className="text-lg">{message.content}</p>

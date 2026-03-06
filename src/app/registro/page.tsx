@@ -49,7 +49,7 @@ export default function RegistroPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-green-50 to-yellow-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-transparent flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Aviso de Modo de Demonstração */}
         <div className="bg-amber-50 border-2 border-amber-300 rounded-xl p-4 mb-6 flex items-start gap-3">
@@ -74,7 +74,7 @@ export default function RegistroPage() {
         </div>
 
         {/* Card de Registro */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white border-[3px] border-[#264653] shadow-[4px_4px_0px_#264653] rounded-2xl p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
             <Input
               label="Nome Completo"

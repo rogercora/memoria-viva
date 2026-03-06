@@ -34,17 +34,19 @@ export function Card({
       onKeyDown={
         isClickable
           ? (e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                onClick();
-              }
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onClick();
             }
+          }
           : undefined
       }
       className={`
-        bg-white rounded-xl shadow-md border border-gray-200
+        bg-white rounded-2xl border-[3px] border-[#264653]
         ${paddingStyles[padding]}
-        ${isClickable ? 'cursor-pointer hover:shadow-lg transition-shadow focus:outline-none focus:ring-4 focus:ring-blue-500' : ''}
+        ${isClickable
+          ? 'cursor-pointer shadow-[4px_4px_0px_#264653] hover:shadow-[6px_6px_0px_#264653] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus:outline-none focus:ring-4 focus:ring-blue-500'
+          : 'shadow-[4px_4px_0px_#264653]'}
         ${className}
       `}
       aria-label={title}

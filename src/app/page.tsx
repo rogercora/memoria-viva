@@ -28,7 +28,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-green-50 to-yellow-50">
+    <div className="min-h-screen bg-transparent">
       {/* Header */}
       <header className="p-6">
         <nav className="max-w-6xl mx-auto flex justify-between items-center">
@@ -62,8 +62,8 @@ export default function HomePage() {
             Apoio e Carinho para quem cuida de memórias
           </h2>
           <p className="text-2xl text-gray-700 mb-8 max-w-3xl mx-auto">
-            Um aplicativo gratuito para auxiliar pacientes com Alzheimer e seus 
-            cuidadores, usando Inteligência Artificial para dar suporte emocional 
+            Um aplicativo gratuito para auxiliar pacientes com Alzheimer e seus
+            cuidadores, usando Inteligência Artificial para dar suporte emocional
             e cognitivo.
           </p>
           <div className="flex gap-4 justify-center">
@@ -79,7 +79,7 @@ export default function HomePage() {
 
         {/* Features */}
         <div className="grid md:grid-cols-3 gap-8 mt-16">
-          <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+          <div className="bg-white border-[3px] border-[#264653] shadow-[4px_4px_0px_#264653] rounded-2xl p-8 text-center">
             <div className="w-20 h-20 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4">
               <Heart className="w-10 h-10 text-blue-600" />
             </div>
@@ -87,12 +87,12 @@ export default function HomePage() {
               Para Pacientes
             </h3>
             <p className="text-gray-700 text-lg">
-              Chat companheiro, lembretes suaves de rotina, jogos cognitivos 
+              Chat companheiro, lembretes suaves de rotina, jogos cognitivos
               e álbum de memórias para estimular a mente e o coração.
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+          <div className="bg-white border-[3px] border-[#264653] shadow-[4px_4px_0px_#264653] rounded-2xl p-8 text-center">
             <div className="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4">
               <Users className="w-10 h-10 text-green-600" />
             </div>
@@ -100,12 +100,12 @@ export default function HomePage() {
               Para Cuidadores
             </h3>
             <p className="text-gray-700 text-lg">
-              Suporte emocional, diário de bordo, exercícios de respiração 
+              Suporte emocional, diário de bordo, exercícios de respiração
               e prevenção de burnout. Você não está sozinho.
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+          <div className="bg-white border-[3px] border-[#264653] shadow-[4px_4px_0px_#264653] rounded-2xl p-8 text-center">
             <div className="w-20 h-20 mx-auto bg-yellow-100 rounded-full flex items-center justify-center mb-4">
               <Brain className="w-10 h-10 text-yellow-600" />
             </div>
@@ -113,14 +113,14 @@ export default function HomePage() {
               100% Gratuito
             </h3>
             <p className="text-gray-700 text-lg">
-              Usamos IA de código aberto e servidores gratuitos para manter 
+              Usamos IA de código aberto e servidores gratuitos para manter
               este app acessível para todos que precisam.
             </p>
           </div>
         </div>
 
         {/* Como Funciona */}
-        <div className="mt-20 bg-white rounded-2xl p-10 shadow-lg">
+        <div className="mt-20 bg-white border-[3px] border-[#264653] shadow-[4px_4px_0px_#264653] rounded-2xl p-10">
           <h3 className="text-3xl font-bold text-gray-900 text-center mb-8">
             Como Funciona
           </h3>

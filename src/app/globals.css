@@ -1,20 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #FFFDF5;
   --foreground: #171717;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-open-sans), sans-serif;
   --font-mono: var(--font-geist-mono);
 }
 
 /* Acessibilidade - Foco Visível */
 *:focus-visible {
-  outline: 4px solid #2563eb;
+  outline: 4px solid #264653;
   outline-offset: 2px;
 }
 
@@ -22,9 +22,9 @@
 button:focus-visible,
 a:focus-visible,
 [tabindex]:focus-visible {
-  outline: 4px solid #1d4ed8;
+  outline: 4px solid #264653;
   outline-offset: 4px;
-  box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 0 0 8px rgba(38, 70, 83, 0.3);
 }
 
 /* Fonte Grande para Acessibilidade */
@@ -109,12 +109,7 @@ body {
 
 /* Gradiente Padrão do App */
 .bg-memoria-viva {
-  background: linear-gradient(
-    135deg,
-    #eff6ff 0%,
-    #f0fdf4 50%,
-    #fefce8 100%
-  );
+  background-color: var(--background);
 }
 
 /* Texto com Alto Contraste */
