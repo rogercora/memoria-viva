@@ -196,7 +196,7 @@ export default function DashboardPage() {
                 Área do Cuidador
               </h3>
               <p className="text-gray-600">
-                Suporte emocional, diário de bordo e exercícios de respiração
+                Suporte emocional, desabafo, diário de bordo e exercícios de respiração
               </p>
             </Card>
 

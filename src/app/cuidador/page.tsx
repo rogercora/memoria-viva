@@ -4,11 +4,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMockAuth } from '@/hooks/useMockAuth';
 import { createClient } from '@supabase/supabase-js';
-import { Heart, ArrowLeft, Mic, MicOff, Wind, BookOpen } from 'lucide-react';
+import { Heart, ArrowLeft, Mic, MicOff, Wind, BookOpen, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
-import { sendMessage, CAREGIVER_SYSTEM_PROMPT } from '@/lib/ai-service';
+import { CAREGIVER_SYSTEM_PROMPT } from '@/lib/ai-service';
 import { MOOD_LABELS, MoodType } from '@/types';
 
 const supabase = createClient(
@@ -27,7 +27,7 @@ export default function CuidadorPage() {
   const router = useRouter();
   const { user } = useMockAuth();
   
-  const [activeTab, setActiveTab] = useState<'chat' | 'diario' | 'respiracao'>('chat');
+  const [activeTab, setActiveTab] = useState<'chat' | 'diario' | 'respiracao' | 'desabafo'>('chat');
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [sending, setSending] = useState(false);
@@ -94,10 +94,17 @@ export default function CuidadorPage() {
     setSending(true);
 
     try {
-      const response = await sendMessage(
-        [{ role: 'user', content: inputMessage }],
-        { system_prompt: CAREGIVER_SYSTEM_PROMPT }
-      );
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: inputMessage }],
+          system_prompt: CAREGIVER_SYSTEM_PROMPT,
+        }),
+      });
+
+      const data = await res.json();
+      const response = data.response || data.message || 'Desculpe, não consegui responder.';
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -215,6 +222,15 @@ export default function CuidadorPage() {
               className="flex-1 min-w-fit"
             >
               Conversar
+            </Button>
+            <Button
+              onClick={() => setActiveTab('desabafo')}
+              variant={activeTab === 'desabafo' ? 'primary' : 'secondary'}
+              size="large"
+              icon={<MessageCircle size={20} />}
+              className="flex-1 min-w-fit"
+            >
+              Desabafo
             </Button>
             <Button
               onClick={() => setActiveTab('diario')}
@@ -461,6 +477,20 @@ export default function CuidadorPage() {
               </p>
             </Card>
           </div>
+        )}
+
+        {/* Desabafo */}
+        {activeTab === 'desabafo' && (
+          <Card padding="large" className="text-center">
+            <MessageCircle className="w-16 h-16 mx-auto text-green-600 mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Espaço de Desabafo
+            </h2>
+            <p className="text-gray-600 max-w-md mx-auto">
+              Em breve: um espaço seguro para você desabafar, colocar para fora 
+              o que está sentindo e receber apoio. Estamos trabalhando nisso.
+            </p>
+          </Card>
         )}
       </main>
     </div>
