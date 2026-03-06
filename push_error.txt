@@ -1,0 +1,28 @@
+remote: error: GH013: Repository rule violations found for refs/heads/main.        
+remote: 
+remote: - GITHUB PUSH PROTECTION        
+remote:   —————————————————————————————————————————        
+remote:     Resolve the following violations before pushing again        
+remote: 
+remote:     - Push cannot contain secrets        
+remote: 
+remote:             
+remote:      (?) Learn how to resolve a blocked push        
+remote:      https://docs.github.com/code-security/secret-scanning/working-with-secret-scanning-and-push-protection/working-with-push-protection-from-the-command-line#resolving-a-blocked-push        
+remote:             
+remote:             
+remote:       —— Groq API Key ——————————————————————————————————————        
+remote:        locations:        
+remote:          - commit: 2c0820acc047c48ebd27a69837ce79ba4f38095e        
+remote:            path: TESTE.md:135        
+remote:          - commit: 2c0820acc047c48ebd27a69837ce79ba4f38095e        
+remote:            path: VERIFICAR_CREDITOS.md:19        
+remote:             
+remote:        (?) To push, remove secret from commit(s) or follow this URL to allow the secret.        
+remote:        https://github.com/rogercora/memoria-viva/security/secret-scanning/unblock-secret/3AaF37Iycgt28vPO0KMs782nqvo        
+remote:             
+remote: 
+remote: 
+To https://github.com/rogercora/memoria-viva.git
+ ! [remote rejected] main -> main (push declined due to repository rule violations)
+error: failed to push some refs to 'https://github.com/rogercora/memoria-viva.git'

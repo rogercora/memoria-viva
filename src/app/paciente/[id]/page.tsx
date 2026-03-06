@@ -58,13 +58,18 @@ export default function PatientPage() {
   // Speech recognition
   const [recognition, setRecognition] = useState<any>(null);
 
+  // Estado das memórias
+  const [memories, setMemories] = useState<any[]>([]);
+  const [uploadingMemory, setUploadingMemory] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     // Carregar paciente
     const loadPatient = async () => {
       // Verificar se está usando Supabase configurado
-      const isSupabaseConfigured = process.env.NEXT_PUBLIC_SUPABASE_URL && 
-                                    !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder');
-      
+      const isSupabaseConfigured = process.env.NEXT_PUBLIC_SUPABASE_URL &&
+        !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder');
+
       if (!isSupabaseConfigured) {
         // Usar dados mockados
         const mockPatients: Record<string, Patient> = {
@@ -117,6 +122,18 @@ export default function PatientPage() {
       }
 
       setPatient(data);
+
+      // Carregar memórias do Supabase
+      const { data: memoriesData } = await supabase
+        .from('memories')
+        .select('*')
+        .eq('patient_id', patientId)
+        .order('created_at', { ascending: false });
+
+      if (memoriesData) {
+        setMemories(memoriesData);
+      }
+
       setLoading(false);
     };
 
@@ -182,10 +199,10 @@ export default function PatientPage() {
 
     try {
       // Filtrar mensagens de erro do histórico (não enviar para a IA)
-      const validMessages = messages.filter(m => 
+      const validMessages = messages.filter(m =>
         !m.content.includes('Desculpe, não consegui processar')
       );
-      
+
       // Chamar IA via API Route - enviando TODO o histórico da conversa
       const requestBody = {
         // Envia últimas 10 mensagens válidas (suficiente para contexto)
@@ -194,7 +211,7 @@ export default function PatientPage() {
           .map(m => ({ role: m.role, content: m.content })),
         system_prompt: PATIENT_SYSTEM_PROMPT,
       };
-      
+
       console.log('[Chat] Enviando mensagens:', requestBody.messages.length);
       console.log('[Chat] Última mensagem:', requestBody.messages[requestBody.messages.length - 1]);
 
@@ -238,11 +255,88 @@ export default function PatientPage() {
     }
   };
 
+  const handleUploadMemory = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user || !patient) return;
+
+    setUploadingMemory(true);
+    try {
+      // 1. Upload da imagem para o Supabase Storage (bucket 'memories')
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${patient.id}-${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('memories')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error('Erro no upload da foto:', uploadError);
+        alert('Erro ao fazer upload da foto. Verifique se o bucket "memories" existe no Supabase Storage.');
+        return;
+      }
+
+      // 2. Obter URL pública
+      const { data: urlData } = supabase.storage
+        .from('memories')
+        .getPublicUrl(filePath);
+
+      const imageUrl = urlData.publicUrl;
+
+      // 3. Chamar a API de Vision (Groq Llama 3) para gerar a descrição
+      let description = 'Uma lembrança especial adicionada ao seu álbum.';
+      try {
+        const res = await fetch('/api/vision', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageUrl }),
+        });
+        const data = await res.json();
+        if (data.description) {
+          description = data.description;
+        }
+      } catch (err) {
+        console.error('Erro ao gerar descrição com IA:', err);
+      }
+
+      // 4. Salvar no banco de dados (tabela memories)
+      const { data: newMemory, error: dbError } = await supabase
+        .from('memories')
+        .insert({
+          patient_id: patient.id,
+          title: 'Nova Lembrança',
+          description: description,
+          image_url: imageUrl,
+          date_taken: new Date().toISOString().split('T')[0],
+        })
+        .select()
+        .single();
+
+      if (dbError) throw dbError;
+
+      // 5. Atualizar estado local
+      if (newMemory) {
+        setMemories(prev => [newMemory, ...prev]);
+      }
+
+      // Limpar input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+
+    } catch (error) {
+      console.error('Erro geral ao adicionar memória:', error);
+      alert('Não foi possível adicionar a memória. Tente novamente.');
+    } finally {
+      setUploadingMemory(false);
+    }
+  };
+
   const speakMessage = async (text: string) => {
     if ('speechSynthesis' in window) {
       // Aguardar vozes carregarem (necessário no Windows/Chrome)
       let voices = window.speechSynthesis.getVoices();
-      
+
       // Se não tiver vozes ainda, aguardar carregar
       if (voices.length === 0) {
         await new Promise<void>((resolve) => {
@@ -254,13 +348,13 @@ export default function PatientPage() {
           setTimeout(resolve, 500);
         });
       }
-      
+
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'pt-BR';
       utterance.rate = 0.9; // Mais lento para idosos
       utterance.pitch = 1;
       utterance.volume = 1;
-      
+
       // Prioridade de vozes (da melhor para a pior)
       // 1. Edge Neural (Francisca, Antonio) - vozes mais naturais
       // 2. Google (se disponível no Android/Chrome)
@@ -273,12 +367,12 @@ export default function PatientPage() {
         'Microsoft Maria',   // Fallback Windows
         'Microsoft Daniel',  // Fallback Windows (padrão)
       ];
-      
+
       // Buscar a melhor voz disponível
       let selectedVoice = null;
       for (const voiceName of voicePriority) {
-        selectedVoice = voices.find(v => 
-          v.name.includes(voiceName) && 
+        selectedVoice = voices.find(v =>
+          v.name.includes(voiceName) &&
           (v.lang.includes('pt-BR') || v.lang.includes('pt_BR'))
         );
         if (selectedVoice) {
@@ -286,12 +380,12 @@ export default function PatientPage() {
           break;
         }
       }
-      
+
       // Se achou uma voz, usa ela
       if (selectedVoice) {
         utterance.voice = selectedVoice;
       }
-      
+
       window.speechSynthesis.speak(utterance);
     }
   };
@@ -416,11 +510,10 @@ export default function PatientPage() {
                       className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                       <div
-                        className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                          message.role === 'user'
+                        className={`max-w-[80%] rounded-2xl px-4 py-3 ${message.role === 'user'
                             ? 'bg-blue-600 text-white'
                             : 'bg-gray-200 text-gray-900'
-                        }`}
+                          }`}
                       >
                         <p className="text-lg">{message.content}</p>
                         {message.role === 'assistant' && (
@@ -478,69 +571,83 @@ export default function PatientPage() {
         {activeTab === 'memorias' && (
           <div className="space-y-4">
             <Card padding="large">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                📸 Álbum de Memórias
-              </h2>
-
-              {/* Memórias mockadas */}
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="bg-gray-100 rounded-lg p-6 text-center">
-                  <div className="w-20 h-20 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-3">
-                    <span className="text-4xl">👨‍👩‍👧</span>
-                  </div>
-                  <h3 className="font-bold text-gray-900 mb-2">Família</h3>
-                  <p className="text-gray-600 text-sm mb-3">
-                    Fotos especiais com filhos e netos
-                  </p>
-                  <Button variant="primary" size="small" disabled>
-                    Em Breve
-                  </Button>
-                </div>
-
-                <div className="bg-gray-100 rounded-lg p-6 text-center">
-                  <div className="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-3">
-                    <span className="text-4xl">🏠</span>
-                  </div>
-                  <h3 className="font-bold text-gray-900 mb-2">Casa Antiga</h3>
-                  <p className="text-gray-600 text-sm mb-3">
-                    Lembranças da casa da infância
-                  </p>
-                  <Button variant="primary" size="small" disabled>
-                    Em Breve
-                  </Button>
-                </div>
-
-                <div className="bg-gray-100 rounded-lg p-6 text-center">
-                  <div className="w-20 h-20 mx-auto bg-purple-100 rounded-full flex items-center justify-center mb-3">
-                    <span className="text-4xl">🎉</span>
-                  </div>
-                  <h3 className="font-bold text-gray-900 mb-2">Festas</h3>
-                  <p className="text-gray-600 text-sm mb-3">
-                    Aniversários e celebrações
-                  </p>
-                  <Button variant="primary" size="small" disabled>
-                    Em Breve
-                  </Button>
-                </div>
-
-                <div className="bg-gray-100 rounded-lg p-6 text-center">
-                  <div className="w-20 h-20 mx-auto bg-yellow-100 rounded-full flex items-center justify-center mb-3">
-                    <span className="text-4xl">✈️</span>
-                  </div>
-                  <h3 className="font-bold text-gray-900 mb-2">Viagens</h3>
-                  <p className="text-gray-600 text-sm mb-3">
-                    Lugares especiais que visitou
-                  </p>
-                  <Button variant="primary" size="small" disabled>
-                    Em Breve
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  📸 Álbum de Memórias
+                </h2>
+                <div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleUploadMemory}
+                    className="hidden"
+                    ref={fileInputRef}
+                  />
+                  <Button
+                    variant="primary"
+                    size="medium"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingMemory}
+                  >
+                    {uploadingMemory ? 'Processando (IA)...' : '➕ Adicionar Foto'}
                   </Button>
                 </div>
               </div>
 
-              <p className="text-gray-600 mt-6 text-center">
-                🚧 Upload de fotos em desenvolvimento. Em breve você poderá adicionar
-                fotos e a IA vai descrevê-las para estimular as memórias!
-              </p>
+              {memories.length === 0 ? (
+                <div className="bg-gray-50 rounded-lg p-12 text-center border-2 border-dashed border-gray-200">
+                  <div className="w-20 h-20 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <Image size={40} className="text-blue-500" />
+                  </div>
+                  <h3 className="font-bold text-gray-900 text-lg mb-2">Seu Álbum está vazio</h3>
+                  <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                    Adicione fotos importantes como família, viagens ou a casa antiga. A Inteligência Artificial vai ajudar a descrever cada momento para estimular as memórias.
+                  </p>
+                  <Button
+                    variant="primary"
+                    size="large"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingMemory}
+                  >
+                    Fazer Upload da Primeira Foto
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {memories.map((memory) => (
+                    <div key={memory.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+                      <div className="h-48 overflow-hidden relative bg-gray-100">
+                        <img
+                          src={memory.image_url}
+                          alt={memory.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <div className="flex justify-between items-start mb-2">
+                          <h3 className="font-bold text-gray-900 line-clamp-1">{memory.title}</h3>
+                          {memory.date_taken && (
+                            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                              {new Date(memory.date_taken).toLocaleDateString('pt-BR')}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                          {memory.description}
+                        </p>
+                        <Button
+                          variant="secondary"
+                          size="small"
+                          className="w-full"
+                          onClick={() => speakMessage(memory.description || memory.title)}
+                        >
+                          🔊 Ouvir Descrição
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </Card>
           </div>
         )}

@@ -387,3 +387,29 @@ CREATE TRIGGER create_patient_settings_on_create
 -- Tipos de relacionamento pré-definidos
 COMMENT ON COLUMN patient_caregiver_relations.relationship_type IS 
   'Opções: pai, mae, filho, filha, conjuge, profissional, outro';
+
+-- ============================================
+-- STORAGE (BUCKETS)
+-- ============================================
+-- Cria o bucket para as fotos de memórias (público para facilitar leitura no frontend)
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('memories', 'memories', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Policies para o bucket memories
+CREATE POLICY "Public Access" 
+  ON storage.objects FOR SELECT 
+  USING (bucket_id = 'memories');
+
+CREATE POLICY "Authenticated users can upload memories" 
+  ON storage.objects FOR INSERT 
+  WITH CHECK (bucket_id = 'memories' AND auth.role() = 'authenticated');
+
+CREATE POLICY "Users can update their own memory images" 
+  ON storage.objects FOR UPDATE 
+  USING (bucket_id = 'memories' AND auth.role() = 'authenticated');
+
+CREATE POLICY "Users can delete their own memory images" 
+  ON storage.objects FOR DELETE 
+  USING (bucket_id = 'memories' AND auth.role() = 'authenticated');
+
