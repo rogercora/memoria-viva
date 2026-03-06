@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useMockAuth } from '@/hooks/useMockAuth';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { Brain, AlertTriangle } from 'lucide-react';
+import { Brain, AlertTriangle, User, Mail, Lock } from 'lucide-react';
 
 export default function RegistroPage() {
   const router = useRouter();
@@ -125,7 +125,7 @@ export default function RegistroPage() {
 
             <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>Importante:</strong> Este app é gratuito e não substitui 
+                <strong>Importante:</strong> Este app é gratuito e não substitui
                 acompanhamento médico profissional.
               </p>
             </div>
